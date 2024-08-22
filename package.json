@@ -14,6 +14,9 @@
     "vite": "^5.4.1"
   },
   "dependencies": {
-    "@picocss/pico": "^2.0.6"
+    "@ipld/dag-cbor": "^9.2.1",
+    "@noble/ed25519": "^2.0.0",
+    "@picocss/pico": "^2.0.6",
+    "multiformats": "^13.2.2"
   }
 }

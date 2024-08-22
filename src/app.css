@@ -3,3 +3,7 @@ svg.icon {
   height: 1em;
   vertical-align: -0.125em;
 }
+
+#app {
+  max-width: 70ch;
+}
