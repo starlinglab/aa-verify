@@ -128,8 +128,6 @@
   <div id="upload">
     <Upload on:fileUpload={onVCUpload} />
   </div>
-  <hr />
-  <p>Starling Lab blah blah</p>
 {:else if page === "verify"}
   <hr />
   <!-- <article> -->
@@ -167,6 +165,10 @@
   {/if}
   <!-- </article> -->
 {/if}
+<footer>
+  <hr />
+  <p>Starling Lab blah blah</p>
+</footer>
 
 <style>
   h1,
@@ -179,7 +181,9 @@
     height: 7em;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 10em;
+  }
+  footer {
+    margin-top: 10em;
   }
   article > h1,
   article > h2,
