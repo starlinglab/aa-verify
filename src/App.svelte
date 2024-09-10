@@ -125,45 +125,56 @@
 <h1>Authenticated Attributes Verifier</h1>
 {#if page === "home"}
   <p class="center">Upload a Verifiable Credentials file to verify</p>
-  <div id="upload">
+  <div id="upload-vc">
     <Upload on:fileUpload={onVCUpload} />
   </div>
 {:else if page === "verify"}
   <hr />
-  <!-- <article> -->
-  {#if error != null}
-    <p class="center">Couldn't verify your file: {error}</p>
-  {:else}
-    {#if vcInfo.goodSig === true}
-      <h2>Valid signature ✅</h2>
+  <article>
+    {#if error != null}
+      <p class="center">Couldn't verify your file: {error}</p>
     {:else}
-      <h2>Invalid signature ❌</h2>
+      {#if vcInfo.goodSig === true}
+        <h2>Valid signature ✅</h2>
+      {:else}
+        <h2>Invalid signature ❌</h2>
+      {/if}
+      <p>Details:</p>
+      <div class="overflow-auto">
+        <table class="striped">
+          <tbody>
+            <tr>
+              <td>{vcInfo.attr}</td>
+              <td><code>{JSON.stringify(vcInfo.val)}</code></td>
+            </tr>
+            <tr>
+              <td>Signer</td>
+              <td><code>{vcInfo.pubKey}</code></td>
+            </tr>
+            <tr>
+              <td>Time</td>
+              <td><code>{vcInfo.ts}</code></td>
+            </tr>
+            <tr>
+              <td>Media</td>
+              <td><code>{vcInfo.fileCid}</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="center">Upload a file to see if it matches this claim:</p>
+      <div id="upload-media">
+        <Upload />
+      </div>
     {/if}
-    <p>Details:</p>
-    <div class="overflow-auto">
-      <table class="striped">
-        <tbody>
-          <tr>
-            <td>{vcInfo.attr}</td>
-            <td><code>{JSON.stringify(vcInfo.val)}</code></td>
-          </tr>
-          <tr>
-            <td>Signer</td>
-            <td><code>{vcInfo.pubKey}</code></td>
-          </tr>
-          <tr>
-            <td>Time</td>
-            <td><code>{vcInfo.ts}</code></td>
-          </tr>
-          <tr>
-            <td>Media</td>
-            <td><code>{vcInfo.fileCid}</code></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  {/if}
-  <!-- </article> -->
+    <!-- Error or not -->
+  </article>
+  <button
+    on:click={() => {
+      page = "home";
+      error = null;
+    }}>Check another</button
+  >
 {/if}
 <footer>
   <hr />
@@ -176,7 +187,7 @@
   .center {
     text-align: center;
   }
-  #upload {
+  #upload-vc {
     width: 7em;
     height: 7em;
     margin-left: auto;
@@ -185,12 +196,10 @@
   footer {
     margin-top: 10em;
   }
-  article > h1,
-  article > h2,
-  article > h3,
-  article > h4,
-  article > h5,
-  article > h6 {
-    font-size: calc(var(--pico-font-size) * 0.8);
+  #upload-media {
+    width: 3em;
+    height: 3em;
+    margin-left: auto;
+    margin-right: auto;
   }
 </style>
