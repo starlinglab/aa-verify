@@ -170,7 +170,6 @@
       {:else}
         <h2>Invalid signature ❌</h2>
       {/if}
-      <p>Details:</p>
       <div class="overflow-auto">
         <table class="striped">
           <tbody>
@@ -184,7 +183,7 @@
             </tr>
             <tr>
               <td>Time</td>
-              <td><code>{vcInfo.ts}</code></td>
+              <td>{new Date(vcInfo.ts)}</td>
             </tr>
             <tr>
               <td>Media</td>
