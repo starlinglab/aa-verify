@@ -220,7 +220,10 @@
 {/if}
 <footer>
   <hr />
-  <p>Starling Lab blah blah</p>
+  <p>
+    Produced by <a href="https://www.starlinglab.org/">Starling Lab</a>. Source
+    code <a href="https://github.com/starlinglab/aa-verify">available</a>.
+  </p>
 </footer>
 
 <style>
@@ -236,7 +239,7 @@
     margin-right: auto;
   }
   footer {
-    margin-top: 10em;
+    margin-top: 2em;
   }
   #upload-media-component {
     width: 3em;
