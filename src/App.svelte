@@ -6,6 +6,9 @@
   import * as Block from "multiformats/block";
   import { sha256 } from "multiformats/hashes/sha2";
   import * as ed from "@noble/ed25519";
+  import { createHelia } from "helia";
+  import { unixfs } from "@helia/unixfs";
+  import { fixedSize } from "ipfs-unixfs-importer/chunker";
 
   let page = "home";
   let vcText;
@@ -20,6 +23,8 @@
     fileCid: null,
     ts: "",
   };
+  let mediaUploadStatus;
+  let mediaUploadMsg = "";
 
   // https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
   function base64ToBytes(base64) {
@@ -96,8 +101,6 @@
       attestation["encrypted"] = vcInfo.isEncrypted;
       attestation["timestamp"] = vcInfo.ts;
 
-      console.log(attestation);
-
       const block = await Block.encode({
         value: attestation,
         codec: dagCbor,
@@ -119,6 +122,34 @@
       console.log(e);
       error = e;
     }
+  }
+
+  async function onMediaUpload(evt) {
+    mediaUploadStatus = "progress";
+    const reader = new FileReader();
+    reader.addEventListener(
+      "load",
+      async () => {
+        // @ts-ignore
+        let bytes = new Uint8Array(reader.result);
+        const helia = await createHelia();
+        const fs = unixfs(helia);
+        const cid = await fs.addBytes(bytes, {
+          // Use kubo default so hashes match
+          chunker: fixedSize({ chunkSize: 262144 }),
+        });
+        if (cid.toString() === vcInfo.fileCid) {
+          mediaUploadMsg = "File matches VC ✅";
+        } else {
+          mediaUploadMsg = "File doesn't match VC ❌";
+        }
+        mediaUploadStatus = "done";
+        helia.gc();
+        helia.stop();
+      },
+      false
+    );
+    reader.readAsArrayBuffer(evt.detail.file);
   }
 </script>
 
@@ -162,9 +193,20 @@
           </tbody>
         </table>
       </div>
-      <p class="center">Upload a file to see if it matches this claim:</p>
       <div id="upload-media">
-        <Upload />
+        {#if mediaUploadStatus === "progress"}
+          <button
+            aria-busy="true"
+            aria-label="Please wait…"
+            class="secondary"
+          />
+        {:else if mediaUploadStatus === "done"}
+          <p class="center">{mediaUploadMsg}</p>
+        {/if}
+        <p class="center">Upload a file to see if it matches this claim:</p>
+        <div id="upload-media-component">
+          <Upload on:fileUpload={onMediaUpload} />
+        </div>
       </div>
     {/if}
     <!-- Error or not -->
@@ -173,6 +215,7 @@
     on:click={() => {
       page = "home";
       error = null;
+      mediaUploadStatus = null;
     }}>Check another</button
   >
 {/if}
@@ -196,10 +239,13 @@
   footer {
     margin-top: 10em;
   }
-  #upload-media {
+  #upload-media-component {
     width: 3em;
     height: 3em;
     margin-left: auto;
     margin-right: auto;
+  }
+  #upload-media {
+    text-align: center;
   }
 </style>
